@@ -9,6 +9,10 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
+extensions = [
+    "claspbot.trivial"
+]
+
 
 client = discord.Client()
 prefix = ["~"]
@@ -31,7 +35,6 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-
 def load_credential():
     with open('credentials.json','r') as cred:
         return json.load(cred)
@@ -43,8 +46,14 @@ def main():
     bot.client_id = cred['client_id']
     token = cred['token']
 
-    bot.run(token)
+    for extension in extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            print('Failed to load extension {}\n{}: {}'.format(extension, type(e).__name__, e))
 
+
+    bot.run(token)
 
 
 if __name__ == '__main__':
