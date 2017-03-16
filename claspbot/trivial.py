@@ -43,6 +43,10 @@ class Trivial:
         else:
             await self.bot.say("either that's invalid or I'm dumb FeelsBadMan")
 
+    @commands.command()
+    async def avatar(self, user : discord.User):
+        await self.bot.say("{}".format(user.avatar_url))
+
 
 def setup(bot):
     bot.add_cog(Trivial(bot))
