@@ -10,7 +10,8 @@ logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
 extensions = [
-    "claspbot.trivial"
+    "claspbot.trivial",
+    "claspbot.event"
 ]
 
 
