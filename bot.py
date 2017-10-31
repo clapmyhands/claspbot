@@ -1,24 +1,24 @@
-import claspbot
-from discord.ext import commands
 import discord
-import logging, sys
+import logging
+import sys
 import json
+
+from discord.ext import commands
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
-
-extensions = [
+bot_extensions = [
     "claspbot.trivial",
     "claspbot.event"
 ]
-
 
 client = discord.Client()
 prefix = ["~"]
 
 bot = commands.Bot(command_prefix=prefix)
+
 
 @bot.event
 async def on_ready():
@@ -26,10 +26,12 @@ async def on_ready():
     logger.info("Username: {}".format(bot.user.name))
     logger.info("ID: {}".format(bot.user.id))
 
+
 @bot.command(pass_context=True)
 async def hey(ctx):
     msg = ctx.message
     await bot.say("hey {}".format(msg.author.mention))
+
 
 @bot.event
 async def on_message(message):
@@ -37,7 +39,7 @@ async def on_message(message):
 
 
 def load_credential():
-    with open('credentials.json','r') as cred:
+    with open('credentials.json', 'r') as cred:
         return json.load(cred)
 
 
@@ -47,12 +49,12 @@ def main():
     bot.client_id = cred['client_id']
     token = cred['token']
 
-    for extension in extensions:
+    for extension in bot_extensions:
         try:
             bot.load_extension(extension)
         except Exception as e:
-            print('Failed to load extension {}\n{}: {}'.format(extension, type(e).__name__, e))
-
+            print('Failed to load extension {}\n{}: {}'.format(
+                extension, type(e).__name__, e))
 
     bot.run(token)
 

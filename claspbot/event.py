@@ -1,7 +1,9 @@
-from discord.ext import commands
-from claspbot.utils.number import *
 import discord
+import logging
 
+import claspbot.utils.number as number
+
+from discord.ext import commands
 
 logger = logging.getLogger('discord')
 
@@ -29,7 +31,7 @@ class Event:
             await self.bot.say(self.vote[id].result)
 
     @commands.command(pass_context=True)
-    async def v(self, ctx, message : str):
+    async def v(self, ctx, message: str):
         channel = ctx.message.channel
         server = ctx.message.server
         id = "{}.{}".format(server, channel)
@@ -38,7 +40,7 @@ class Event:
             await self.bot.say("no running vote on this channel")
             return
 
-        num = parse_int(message)
+        num = number.parse_int(message)
         if num is None:
             await self.bot.say("invalid vote")
             return
@@ -64,18 +66,17 @@ class Event:
         self.vote.pop(id, None)
 
 
-
 class Vote:
     """
     assuming the voting wont be abused by having crazy amount of vote items
     1 voting per channel??
     """
     def __init__(self, vote_items):
-        self.vote_index = {k:v for k,v in enumerate(vote_items)}
-        self.voters = {keys:[] for keys in self.vote_index}
+        self.vote_index = {k: v for k, v in enumerate(vote_items)}
+        self.voters = {keys: [] for keys in self.vote_index}
         self.voted_by_user = {}
 
-    def insert_vote(self, item_number, voter : discord.User):
+    def insert_vote(self, item_number, voter: discord.User):
         """
 
         :param item_number:
@@ -90,7 +91,7 @@ class Vote:
         # if user already voted, remove current vote
         if voter.id in self.voted_by_user:
             if item_number == self.voted_by_user[voter.id]:
-                return # if same vote then do nothing
+                return  # if same vote then do nothing
             else:
                 key = self.voted_by_user[voter.id]
                 self.voters[key].remove(voter.id)
@@ -101,8 +102,8 @@ class Vote:
             self.voted_by_user[voter.id] = item_number
 
     def count_vote(self):
-        vote_count = [[self.vote_index[k],len(self.voters[k])] for k in self.voters]
-            #.sort(key=lambda x:x[1], reverse=True)
+        vote_count = [[self.vote_index[k], len(self.voters[k])]
+                      for k in self.voters]
         return vote_count
 
     def destroy_vote(self):
@@ -122,6 +123,7 @@ class Vote:
             item_name, count = item
             msg.append("{}. {}: {}".format(idx+1, item_name, count))
         return "\n".join(msg)
+
 
 def setup(bot):
     bot.add_cog(Event(bot))

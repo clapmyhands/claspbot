@@ -1,7 +1,7 @@
-
 import logging
 
 logger = logging.getLogger('discord')
+
 
 def parse_int(msg):
     try:
