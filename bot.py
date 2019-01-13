@@ -1,14 +1,18 @@
-import claspbot
-from discord.ext import commands
 import discord
-import logging, sys
+import logging
+import sys
 import json
+
+from discord.ext import commands
 
 logger = logging.getLogger('discord')
 logger.setLevel(logging.DEBUG)
 logger.addHandler(logging.StreamHandler(stream=sys.stdout))
 
-
+bot_extensions = [
+    "claspbot.trivial",
+    "claspbot.event"
+]
 
 client = discord.Client()
 prefix = ["~"]
@@ -31,9 +35,8 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-
 def load_credential():
-    with open('credentials.json','r') as cred:
+    with open('credentials.json', 'r') as cred:
         return json.load(cred)
 
 
@@ -43,8 +46,14 @@ def main():
     bot.client_id = cred['client_id']
     token = cred['token']
 
-    bot.run(token)
+    for extension in bot_extensions:
+        try:
+            bot.load_extension(extension)
+        except Exception as e:
+            print('Failed to load extension {}\n{}: {}'.format(
+                extension, type(e).__name__, e))
 
+    bot.run(token)
 
 
 if __name__ == '__main__':
